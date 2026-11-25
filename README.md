@@ -1,4 +1,4 @@
-# gsc-data-analysis
+# gsc-data-analysis-skill
 
 An **Agent Skill** and Python toolkit for **rigorous data-science analysis on Google Search Console data**. It separates real traffic anomalies and CTR shifts from weekday seasonality, sampling noise, and multiple-testing false positives.
 
