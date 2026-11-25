@@ -64,3 +64,28 @@ Read `references/pitfalls.md` and check every finding against it. In particular,
 - Statistical significance vs. practical importance (large impression counts make tiny CTR shifts "significant").
 - Regression to the mean and Simpson's paradox when mixing devices, countries, or query mixes.
 - Correlation vs. causation (an anomaly aligning with an algorithm update or deploy is a hypothesis to verify, not proof).
+
+## 5. Mapping statistical outputs to SEO actions
+
+Never stop at raw p-values or z-scores. Translate every verified finding into an explicit SEO diagnosis and next action:
+
+| Output / Signal | What it diagnoses | Concrete SEO action |
+|---|---|---|
+| `anomalies.detect` flags 1–2 isolated days (`level_shift = within_normal_range`) | Viral spike, 24h tracking glitch, or temporary crawl/server hiccup | Log the date as an incident; **do not** edit titles, content, or technical setup |
+| `level_shift = unusually_low` (with exact start date from `anomalies.csv`) | Sustained structural drop (deploy regression, `noindex`/canonical error, Google update, or real demand shift) | Start root-cause triage from that exact date: inspect templates, indexation (`inspect_url`), server logs, and SERP changes |
+| `compare`: `verdict = down` with large negative **`impressions_effect`** (CTR stable) | **Visibility / ranking loss** (lost rankings, cannibalization, deindexing, or seasonal demand drop) | Check query/page rank history, URL indexation, internal links, content freshness, and search intent alignment |
+| `compare`: `verdict = down` with large negative **`ctr_effect`** (impressions stable) | **SERP / snippet loss** (new AI Overview, more ads/SERP features, stronger competitor titles, lost rich snippets) | Inspect the live SERP for top queries; rewrite `title`/`meta` and restore or add structured data |
+| `compare`: `verdict = new` | Newly indexed or newly ranking URLs gaining traction | Strengthen with internal links from high-authority pages and expand coverage around winning queries |
+| `compare`: `verdict = lost` | URLs that disappeared from impressions | Check HTTP status (`404`/`410`/`301`), canonical tags, `noindex`, or keyword cannibalization |
+| `compare`: `verdict = inconclusive` or `low_volume` | Chance fluctuation or insufficient impressions | Put on the **"Do Not Touch" list** so team hours are not wasted chasing noise |
+| `ctr_model`: `underperformers` ranked by `est_extra_clicks` | Non-brand top-10 queries with sufficient volume whose CTR sits statistically below the site's own curve | Prioritize a **Title / Meta / Search Intent Optimization Backlog** starting from highest `est_extra_clicks` (stating it as an upper bound) |
+
+## 6. Standard SEO deliverable format
+
+When presenting results to the user, organize the response in these five sections:
+1. **Data Reliability & Caveats** — pass/warn status from `quality.check` (truncation, incomplete last 3 days, date gaps, anonymized query caveat).
+2. **Incident & Trend Triage** — whether a daily drop is noise, a single-day spike, or a sustained `level_shift`, with exact dates.
+3. **Visibility vs. Snippet Audit Queue** — pages/queries separated by driver (`impressions_effect` vs. `ctr_effect`), plus `new` and `lost` URLs.
+4. **Title / Meta & Intent Backlog** — top non-brand underperforming queries ranked by `est_extra_clicks`, with concrete snippet or intent hypotheses.
+5. **Do-Not-Touch List** — `inconclusive` / `low_volume` movers explicitly held back so no changes are made on statistical noise.
+
